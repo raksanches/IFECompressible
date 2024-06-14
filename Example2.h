@@ -30,21 +30,22 @@ Geometry* fluid = new Geometry(0);
 
 //adding boundary conditions (fluid dirichlet, fluid neumann, mesh displacement)
 //  	fluid->addBoundaryCondition("NEUMANN", l1, {0.0}, {0.0}, "GLOBAL");
-	fluid->addBoundaryCondition("DIRICHLET", l2, true, false, {0.}, {0.0}, "GLOBAL");
-	fluid->addBoundaryCondition("DIRICHLET", l3, false, true, {0.0}, {0.}, "GLOBAL");
-	fluid->addBoundaryCondition("NEUMANN", l4, true, true, {0.}, {0.0}, "GLOBAL");
-	fluid->addBoundaryCondition("DIRICHLET", l1, false, true, {0.0}, {0.}, "GLOBAL");
-	fluid->addBoundaryCondition("DIRICHLET", l5, false, true, {0.0}, {0.}, "GLOBAL");
-	fluid->addBoundaryCondition("DIRICHLET", l6, true, true, {1.0}, {0.}, "GLOBAL");
+// deixar: tipo, linha, restritox?, restritoy?, valorx, valory
+	fluid->addBoundaryCondition("DIRICHLET", l2, true, false, 0., 0.0, "GLOBAL");
+	fluid->addBoundaryCondition("DIRICHLET", l3, false, true, 0.0, 0., "GLOBAL");
+	fluid->addBoundaryCondition("NEUMANN", l4, true, true, 0., 0.0, "GLOBAL");
+	fluid->addBoundaryCondition("DIRICHLET", l1, false, true, 0.0, 0., "GLOBAL");
+	fluid->addBoundaryCondition("DIRICHLET", l5, false, true, 0.0, 0., "GLOBAL");
+	fluid->addBoundaryCondition("DIRICHLET", l6, true, true, 1.0, 0., "GLOBAL");
 	//fluid->addBoundaryCondition("NEUMANN", l2, {0.0}, {0.0}, "GLOBAL");
 
 //values: 0 for fixed and 1 for fluid/structure interaction
-	fluid->addBoundaryCondition("MESHDISPLACEMENT", l2, true, true, {0.}, {0.0}, "GLOBAL");
-	fluid->addBoundaryCondition("MESHDISPLACEMENT", l3, false, true, {0.0}, {0.}, "GLOBAL");
-	fluid->addBoundaryCondition("MESHDISPLACEMENT", l4, true, true, {1.}, {0.0}, "GLOBAL");
-	fluid->addBoundaryCondition("MESHDISPLACEMENT", l1, true, true, {0.0}, {0.}, "GLOBAL");
-	fluid->addBoundaryCondition("MESHDISPLACEMENT", l5, false, true, {0.0}, {0.}, "GLOBAL");
-	fluid->addBoundaryCondition("MESHDISPLACEMENT", l6, true, true, {0.0}, {0.}, "GLOBAL");
+	fluid->addBoundaryCondition("MESHDISPLACEMENT", l2, true, true, 0., 0.0, "GLOBAL");
+	fluid->addBoundaryCondition("MESHDISPLACEMENT", l3, false, true, 0.0, 0., "GLOBAL");
+	fluid->addBoundaryCondition("MESHDISPLACEMENT", l4, true, true, 1., 0.0, "GLOBAL");
+	fluid->addBoundaryCondition("MESHDISPLACEMENT", l1, true, true, 0.0, 0., "GLOBAL");
+	fluid->addBoundaryCondition("MESHDISPLACEMENT", l5, false, true, 0.0, 0., "GLOBAL");
+	fluid->addBoundaryCondition("MESHDISPLACEMENT", l6, true, true, 0.0, 0., "GLOBAL");
 
 
 	//creating fluid domain. parameter: fluid geometry

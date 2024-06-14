@@ -62,6 +62,8 @@ public:
 
 	std::vector<int> getMeshConstrains();
 
+	std::vector<double> getMeshDisplacementValues();
+
 	void addBoundaryConditions();
 
 	void solveCompressibleFlow();

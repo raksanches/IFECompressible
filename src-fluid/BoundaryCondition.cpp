@@ -1,6 +1,6 @@
 #include "BoundaryCondition.h"
 
-BoundaryCondition::BoundaryCondition(const int& index, const int& nodeIndex, bool& restrictedX, bool& restrictedY, const std::vector<double>& componentX, const std::vector<double>& componentY,
+BoundaryCondition::BoundaryCondition(const int& index, const int& nodeIndex, bool& restrictedX, bool& restrictedY, const double& componentX, const double& componentY,
                       const std::string& method, const std::string& referenceSystem, const double& penaltyParameter)
 {
     restrictedX_=restrictedX;
@@ -14,8 +14,7 @@ BoundaryCondition::BoundaryCondition(const int& index, const int& nodeIndex, boo
     penaltyParameter_ = penaltyParameter;
 }
     
-BoundaryCondition::BoundaryCondition(const int& index, const int& elementIndex, const int& elementSide, bool& restrictedX, bool& restrictedY, const std::vector<double>& componentX,
-                      const std::vector<double>& componentY, const std::string& method, const std::string& referenceSystem, const double& penaltyParameter)
+BoundaryCondition::BoundaryCondition(const int& index, const int& elementIndex, const int& elementSide, bool& restrictedX, bool& restrictedY, const double& componentX, const double& componentY, const std::string& method, const std::string& referenceSystem, const double& penaltyParameter)
 {
     restrictedX_=restrictedX;
     restrictedY_=restrictedY;
@@ -39,7 +38,7 @@ int BoundaryCondition::getNodeIndex()
     return nodeIndex_;
 }
 
-std::vector<double> BoundaryCondition::getComponent(const int& direction)
+double BoundaryCondition::getComponent(const int& direction)
 {
     if (direction == 0)
         return componentX_;

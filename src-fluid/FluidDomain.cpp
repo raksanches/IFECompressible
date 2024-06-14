@@ -305,21 +305,22 @@ std::vector<int> FluidDomain::getConstrains1()
 		int dofIndex = nodeIndex;// nodes_[nodeIndex] -> getDOFNode();
 		nodes_[nodeIndex]->setConstrain(true);
 
-		for (size_t i = 0; i < 2; i++)
+		/*for (size_t i = 0; i < 2; i++)
 		{
 			if (bc->getComponent(i).size() != 0)
 			{
 				dof.push_back(2*dofIndex + i);
 			}
 		}
-
+*/
 	}
 	return dof;
 }
 
 std::vector<int> FluidDomain::getMeshConstrains()
 {
-	//setting dof that are constrained
+//setting nodes that are fixed
+
 //	for (BoundaryCondition* bc : boundaryConditions_["MESH_DISPLACEMENT"])
 //	{
 //		int nodeIndex = bc->getNodeIndex();
@@ -344,13 +345,13 @@ std::vector<int> FluidDomain::getMeshConstrains()
 			}
 
 
-/*			if (bc->getComponent(i).size() != 0)
-			{
-				std::vector<double> valuei = bc ->getComponent(i);
-				if(valuei[0]>0.01)dof.push_back(2*nodeIndex + i);
-				
-			}
-*/
+//			if (bc->getComponent(i).size() != 0)
+//			{
+//				std::vector<double> valuei = bc ->getComponent(i);
+//				if(valuei[0]>0.01)dof.push_back(2*nodeIndex + i);
+//				
+//			}
+
 
 		}
 	
@@ -358,6 +359,57 @@ std::vector<int> FluidDomain::getMeshConstrains()
 	}
 	return dof;
 }
+
+std::vector<double> FluidDomain::getMeshDisplacementValues()
+{
+//setting nodes that are fixed
+
+//	for (BoundaryCondition* bc : boundaryConditions_["MESH_DISPLACEMENT"])
+//	{
+//		int nodeIndex = bc->getNodeIndex();
+//		nodes_[nodeIndex]->setMeshConstrain(true);	
+//	}
+	std::vector<double> dofValue;
+	//setting dof that are constrained
+	int icount=0;
+	for (BoundaryCondition* bc : boundaryConditions_["MESH_DISPLACEMENT"])
+	{icount++;
+
+		int nodeIndex = bc->getNodeIndex();
+
+		for (size_t i = 0; i < 2; i++)
+		{
+
+			if (bc->getRestrictedDir(i)==true)
+			{
+				double auxvalue = bc->getComponent(i);
+				dofValue.push_back(auxvalue);	
+			}
+
+
+//			if (bc->getComponent(i).size() != 0)
+//			{
+//				std::vector<double> valuei = bc ->getComponent(i);
+//				if(valuei[0]>0.01)dof.push_back(2*nodeIndex + i);
+//				
+//			}
+
+
+		}
+	
+
+	}
+	return dofValue;
+}
+
+/*std::vector<double> BoundaryCondition::getComponent(const int& direction)
+{
+    if (direction == 0)
+        return componentX_;
+    else
+        return componentY_;
+}
+*/
 
 
 void FluidDomain::addBoundaryConditions()
@@ -737,7 +789,7 @@ void FluidDomain::solveCompressibleFlow()
 				
 	//Array of constrained degrees of freedom
 	getNeummanConstrains();
-	std::vector<int> temp = getConstrains(); //implementar getconstrains
+	std::vector<int> temp = getConstrains(); 
 	PetscMalloc1(temp.size(),&dof);
 	//std::cout<<" restriced dofs "<<" "<<temp.size()<<std::endl;
 
@@ -1547,7 +1599,7 @@ void FluidDomain::solveCompressibleFlowMoving()
     std::cout<<"Starting time loop"<<std::endl; 
 	
 	Mat               A;  
-    Vec               b, x, All, lumpedMass, xlump, AllLump, rhsSG, AllrhsSG;
+    Vec               b, x, All, lumpedMass, xlump, AllLump, rhsSG, AllrhsSG, dispMeshValues;
     PetscErrorCode    ierr;
     PetscInt          Istart, Iend, Idof, Ione, iterations, *dof, *dofMesh;
     KSP               ksp;
@@ -1714,11 +1766,21 @@ void FluidDomain::solveCompressibleFlowMoving()
 	  
 	std::vector<int> tempMesh = getMeshConstrains(); //implementar getconstrains
 	PetscMalloc1(tempMesh.size(),&dofMesh);
+
+	std::vector<double> tempMeshValues = getMeshDisplacementValues(); //implementar getconstrains
+	PetscMalloc1(tempMeshValues.size(),&dispMeshValues);
+
 	//std::cout<<" restriced dofs "<<" "<<temp.size()<<std::endl;
 
 	for (size_t i = 0; i < tempMesh.size(); i++)
 	{
 		dofMesh[i] = tempMesh[i];
+
+	}
+
+	for (size_t i = 0; i < tempMeshValues.size(); i++)
+	{
+		dispMeshValues[i] = tempMeshValues[i];
 
 	}
 
@@ -2499,14 +2561,15 @@ void FluidDomain::solveCompressibleFlowMoving()
 			ierr = VecDestroy(&AllLump); //CHKERRQ(ierr);
 			exportToParaview(itimeStep+1);
 	
-/* Commented for tests Start
+
 		 std::cout<<"TO enter mesh"<<std::endl; 
 		//	************************************
 		//	Solves Mesh Movement
 		//	************************************
-		//Create PETSc sparse parallel matrix
+		//Create PETSc sparse parallel matrix and vectors
+			
         ierr = MatCreateAIJ(PETSC_COMM_WORLD, PETSC_DECIDE, PETSC_DECIDE,
-                            nodes_.size() , nodes_.size(),
+                            2 * nodes_.size() , 2 * nodes_.size(),
                             100,NULL,300,NULL,&A); 
 		//	CHKERRQ(ierr);
     
@@ -2527,10 +2590,7 @@ std::cout<<"TO enter Elements mesh"<<std::endl;
 			{
 
 				bounded_matrix<double, 3, 3> elementMatrix;
-			
-	
-				//el->calculateMeshStiffness(MeshStiffness);//Calculate based on element areas
-
+						
 				elementMatrix = el->elementContributionsMesh();
 
 			 	for (size_t i = 0; i < el->getNodes().size(); i++)
@@ -2555,7 +2615,7 @@ std::cout<<"TO enter Elements mesh"<<std::endl;
     	ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY); //CHKERRQ(ierr);
     	ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY); //CHKERRQ(ierr);
 
-
+/*
 
 //    	ierr = VecAssemblyBegin(b); //CHKERRQ(ierr);
 //    	ierr = VecAssemblyEnd(b); //CHKERRQ(ierr);
@@ -2568,6 +2628,7 @@ std::cout<<"TO enter Elements mesh"<<std::endl;
 		//Applying boundary conditions on Mesh
 
 		MatZeroRows(A, tempMesh.size(), dof, 1.0, x, b);
+
 		//insert value in b
 		//End Applying boundary conditions on Momentum
 		//-------------------------------------------
@@ -2645,7 +2706,7 @@ std::cout<<"TO enter Elements mesh"<<std::endl;
 		//ierr = VecDestroy(&b); //CHKERRQ(ierr);
 		//ierr = VecDestroy(&x); //CHKERRQ(ierr);
 		//ierr = VecDestroy(&All); //CHKERRQ(ierr);
-		//ierr = MatDestroy(&A); //CHKERRQ(ierr);
+		ierr = MatDestroy(&A); //CHKERRQ(ierr);
 
 		MPI_Barrier(PETSC_COMM_WORLD);
 
