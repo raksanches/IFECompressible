@@ -1,0 +1,50 @@
+Starting time loop
+Starting time loop
+Starting time loop
+Starting time loop
+Time step 0
+TO enter elements 1
+TO enter elements 1
+TO enter elements 1
+TO enter elements 1
+TO enter step 2
+TO enter step 2
+TO enter step 2
+TO enter step 2
+TO enter elements 2
+TO enter elements 2
+TO enter elements 2
+TO enter elements 2
+TO solve 2
+TO solve 2
+TO solve 2
+TO solve 2
+TO update 2
+TO update 2
+TO update 2
+TO update 2
+TO enter step 3
+TO enter step 3
+TO enter step 3
+TO enter step 3
+TO enter mesh
+TO enter mesh
+TO enter mesh
+TO enter mesh
+TO enter Elements mesh
+TO enter Elements mesh
+TO enter Elements mesh
+TO enter Elements mesh
+[mpiexec@raksanches] Sending Ctrl-C to processes as requested
+[mpiexec@raksanches] Press Ctrl-C again to force abort
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   PID 463541 RUNNING AT raksanches
+=   EXIT CODE: 2
+=   CLEANING UP REMAINING PROCESSES
+=   YOU CAN IGNORE THE BELOW CLEANUP MESSAGES
+===================================================================================
+YOUR APPLICATION TERMINATED WITH THE EXIT STRING: Interrupt (signal 2)
+This typically refers to a problem with your application.
+Please see the FAQ page for debugging suggestions
