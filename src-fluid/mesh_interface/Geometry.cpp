@@ -221,7 +221,7 @@ void Geometry::transfiniteSurface(std::vector<PlaneSurface*> planeSurfaces, std:
 	gmshCode_ += text.str();
 }
 
-void Geometry::addBoundaryCondition(const std::string& type, Point* point, const bool& restrictedX, const bool& restrictedY,const std::vector<double>& componentX, const std::vector<double>& componentY, const std::string& referenceSystem, const std::string& method, const double& penaltyParameter)
+void Geometry::addBoundaryCondition(const std::string& type, Point* point, const bool& restrictedX, const bool& restrictedY,const double& componentX, const double& componentY, const std::string& referenceSystem, const std::string& method, const double& penaltyParameter)
 {
 	if (boundaryConditions_.count(type) == 0)
 		boundaryConditions_[type] = std::vector<GeometricBoundaryCondition*>();
@@ -231,7 +231,7 @@ void Geometry::addBoundaryCondition(const std::string& type, Point* point, const
 	boundaryConditions_[type].push_back(b);
 }
 
-void Geometry::addBoundaryCondition(const std::string& type, Line* line, const bool& restrictedX, const bool& restrictedY,const std::vector<double>& componentX, const std::vector<double>& componentY, const std::string& referenceSystem, const std::string& method, const double& penaltyParameter)
+void Geometry::addBoundaryCondition(const std::string& type, Line* line, const bool& restrictedX, const bool& restrictedY,const double& componentX, const double& componentY, const std::string& referenceSystem, const std::string& method, const double& penaltyParameter)
 {
 	if (boundaryConditions_.count(type) == 0)
 		boundaryConditions_[type] = std::vector<GeometricBoundaryCondition*>();

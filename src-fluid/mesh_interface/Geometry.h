@@ -59,9 +59,9 @@ public:
 
 	void transfiniteSurface(std::vector<PlaneSurface*> surfaces, std::string oientation = "Left", std::vector<Point*> points = std::vector<Point*>());
 
-	void addBoundaryCondition(const std::string& type, Point* point,  const bool& restrictedX, const bool& restrictedY, const std::vector<double>& componentX = std::vector<double>(), const std::vector<double>& componentY = std::vector<double>(), const std::string& referenceSystem = "GLOBAL", const std::string& method = "STRONG", const double& penaltyParameter = 1.0e6);
+	void addBoundaryCondition(const std::string& type, Point* point,  const bool& restrictedX, const bool& restrictedY, const double& componentX, const double& componentY, const std::string& referenceSystem = "GLOBAL", const std::string& method = "STRONG", const double& penaltyParameter = 1.0e6);
 	
-	void addBoundaryCondition(const std::string& type, Line* line,  const bool& restrictedX, const bool& restrictedY, const std::vector<double>& componentX = std::vector<double>(), const std::vector<double>& componentY = std::vector<double>(), const std::string& referenceSystem = "GLOBAL", const std::string& method = "STRONG", const double& penaltyParameter = 1.0e6);
+	void addBoundaryCondition(const std::string& type, Line* line,  const bool& restrictedX, const bool& restrictedY, const double& componentX, const double& componentY, const std::string& referenceSystem = "GLOBAL", const std::string& method = "STRONG", const double& penaltyParameter = 1.0e6);
 
 private:
 	int index_;

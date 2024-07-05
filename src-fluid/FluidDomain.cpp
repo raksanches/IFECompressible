@@ -422,8 +422,8 @@ void FluidDomain::addBoundaryConditions()
 		{
 			std::string pointName = gbc->getPointName();
 			std::string referenceSystem = gbc->getReferenceSystem();
-			std::vector<double> componentX = gbc->getComponentX();
-			std::vector<double> componentY = gbc->getComponentY();
+			double componentX = gbc->getComponentX();
+			double componentY = gbc->getComponentY();
 			bool restrictedX = gbc->getRestrictedX();
 			bool restrictedY = gbc->getRestrictedY(); 
 			std::string method = gbc->getMethod();
@@ -442,8 +442,8 @@ void FluidDomain::addBoundaryConditions()
 		{
 			std::string lineName = gbc->getLineName();
 			std::string referenceSystem = gbc->getReferenceSystem();
-			std::vector<double> componentX = gbc->getComponentX();
-			std::vector<double> componentY = gbc->getComponentY();
+			double componentX = gbc->getComponentX();
+			double componentY = gbc->getComponentY();
 			bool restrictedX = gbc->getRestrictedX();
 			bool restrictedY = gbc->getRestrictedY();
 			std::string method = gbc->getMethod();
@@ -487,8 +487,8 @@ void FluidDomain::addBoundaryConditions()
 		{
 			std::string pointName = gbc->getPointName();
 			std::string referenceSystem = gbc->getReferenceSystem();
-			std::vector<double> componentX = gbc->getComponentX();
-			std::vector<double> componentY = gbc->getComponentY();
+			double componentX = gbc->getComponentX();
+			double componentY = gbc->getComponentY();
 			bool restrictedX = gbc->getRestrictedX();
 			bool restrictedY = gbc->getRestrictedY();
 			std::string method = gbc->getMethod();
@@ -507,8 +507,8 @@ void FluidDomain::addBoundaryConditions()
 		{
 			std::string lineName = gbc->getLineName();
 			std::string referenceSystem = gbc->getReferenceSystem();
-			std::vector<double> componentX = gbc->getComponentX();
-			std::vector<double> componentY = gbc->getComponentY();
+			double componentX = gbc->getComponentX();
+			double componentY = gbc->getComponentY();
 			bool restrictedX = gbc->getRestrictedX();
 			bool restrictedY = gbc->getRestrictedY();
 			std::string method = gbc->getMethod();
@@ -534,8 +534,8 @@ void FluidDomain::addBoundaryConditions()
 		{
 			std::string pointName = gbc->getPointName();
 			std::string referenceSystem = gbc->getReferenceSystem();
-			std::vector<double> componentX = gbc->getComponentX();
-			std::vector<double> componentY = gbc->getComponentY();
+			double componentX = gbc->getComponentX();
+			double componentY = gbc->getComponentY();
 			bool restrictedX = gbc->getRestrictedX();
 			bool restrictedY = gbc->getRestrictedY();
 			std::string method = gbc->getMethod();
@@ -554,8 +554,8 @@ void FluidDomain::addBoundaryConditions()
 		{
 			std::string lineName = gbc->getLineName();
 			std::string referenceSystem = gbc->getReferenceSystem();
-			std::vector<double> componentX = gbc->getComponentX();
-			std::vector<double> componentY = gbc->getComponentY();
+			double componentX = gbc->getComponentX();
+			double componentY = gbc->getComponentY();
 			bool restrictedX = gbc->getRestrictedX();
 			bool restrictedY = gbc->getRestrictedY();
 			std::string method = gbc->getMethod();
@@ -1599,7 +1599,7 @@ void FluidDomain::solveCompressibleFlowMoving()
     std::cout<<"Starting time loop"<<std::endl; 
 	
 	Mat               A;  
-    Vec               b, x, All, lumpedMass, xlump, AllLump, rhsSG, AllrhsSG, dispMeshValues;
+    Vec               b, x, All, lumpedMass, xlump, AllLump, rhsSG, AllrhsSG; //dispMeshValues
     PetscErrorCode    ierr;
     PetscInt          Istart, Iend, Idof, Ione, iterations, *dof, *dofMesh;
     KSP               ksp;
@@ -1619,6 +1619,19 @@ void FluidDomain::solveCompressibleFlowMoving()
 	double TempInf = materials_[0]->getUndisturbedTemperature();
 	double calorv = materials_[0]->getSpecificHeatv();
 	double calorp = materials_[0]->getSpecificHeatp();
+
+	/*// Set element mesh moving parameters
+    double vMax = 0., vMin = 1.e10;
+    for (Element* e : elements_){
+        double v = e -> getJacobian();
+        if (v > vMax) vMax = v;
+        if (v < vMin) vMin = v;
+    };
+    for (int i = 0; i < numElem; i++){
+        double v = elements_[i] -> getJacobian();
+        double eta = 1 + (1. - vMin / vMax) / (v / vMax);
+        elements_[i] -> setMeshMovingParameter(eta);
+    };*/
 
 	bounded_vector<double,2> uprescribed_;
 	for (Node* n : nodes_)
@@ -1754,7 +1767,7 @@ void FluidDomain::solveCompressibleFlowMoving()
 				
 	//Array of constrained degrees of freedom
 	getNeummanConstrains();
-	std::vector<int> temp = getConstrains(); //implementar getconstrains
+	std::vector<int> temp = getConstrains(); 
 	PetscMalloc1(temp.size(),&dof);
 	//std::cout<<" restriced dofs "<<" "<<temp.size()<<std::endl;
 
@@ -1764,11 +1777,11 @@ void FluidDomain::solveCompressibleFlowMoving()
 
 	}
 	  
-	std::vector<int> tempMesh = getMeshConstrains(); //implementar getconstrains
+	std::vector<int> tempMesh = getMeshConstrains(); 
 	PetscMalloc1(tempMesh.size(),&dofMesh);
 
-	std::vector<double> tempMeshValues = getMeshDisplacementValues(); //implementar getconstrains
-	PetscMalloc1(tempMeshValues.size(),&dispMeshValues);
+	/*std::vector<double> tempMeshValues = getMeshDisplacementValues(); 
+	PetscMalloc1(tempMeshValues.size(),&dispMeshValues);*/
 
 	//std::cout<<" restriced dofs "<<" "<<temp.size()<<std::endl;
 
@@ -1778,11 +1791,11 @@ void FluidDomain::solveCompressibleFlowMoving()
 
 	}
 
-	for (size_t i = 0; i < tempMeshValues.size(); i++)
+	/*for (size_t i = 0; i < tempMeshValues.size(); i++)
 	{
 		dispMeshValues[i] = tempMeshValues[i];
 
-	}
+	}*/
 
 	for (int itimeStep = 0; itimeStep < numberOfTimeSteps_; itimeStep++)
 	{
@@ -1990,6 +2003,7 @@ void FluidDomain::solveCompressibleFlowMoving()
 		ierr = VecDestroy(&x); //CHKERRQ(ierr);
 		ierr = VecDestroy(&All); //CHKERRQ(ierr);
 		ierr = MatDestroy(&A); //CHKERRQ(ierr);
+		//ierr = VecDestroy(&dispMeshValues); //CHKERRQ(ierr);
 
 		MPI_Barrier(PETSC_COMM_WORLD);
 
@@ -2562,7 +2576,7 @@ void FluidDomain::solveCompressibleFlowMoving()
 			exportToParaview(itimeStep+1);
 	
 
-		 std::cout<<"TO enter mesh"<<std::endl; 
+		 //std::cout<<"TO enter mesh"<<std::endl; 
 		//	************************************
 		//	Solves Mesh Movement
 		//	************************************
@@ -2582,7 +2596,7 @@ void FluidDomain::solveCompressibleFlowMoving()
             ierr = VecDuplicate(b,&x); //CHKERRQ(ierr);
             ierr = VecDuplicate(b,&All); //CHKERRQ(ierr);
 
-std::cout<<"TO enter Elements mesh"<<std::endl; 
+//std::cout<<"TO enter Elements mesh"<<std::endl; 
 	
 		for (Element *el : elements_) // loop over elements
 		{

@@ -4,8 +4,8 @@ GeometricBoundaryCondition::GeometricBoundaryCondition(const int& index,
 	const std::string& object,
 	const bool& restrictedX, 
 	const bool& restrictedY,
-	const std::vector<double>& componentX,
-	const std::vector<double>& componentY,
+	const double& componentX,
+	const double& componentY,
 	const std::string& referenceSystem,
 	const std::string& method,
 	const double& penaltyParameter)
@@ -53,12 +53,12 @@ bool GeometricBoundaryCondition::getRestrictedY()
 	return restrictedY_;
 }
 
-std::vector<double> GeometricBoundaryCondition::getComponentX()
+double GeometricBoundaryCondition::getComponentX()
 {
 	return componentX_;
 }
 
-std::vector<double> GeometricBoundaryCondition::getComponentY()
+double GeometricBoundaryCondition::getComponentY()
 {
 	return componentY_;
 }
@@ -93,12 +93,12 @@ void GeometricBoundaryCondition::setReferenceSystem(const std::string& reference
 	referenceSystem_ = referenceSystem;
 }
 
-void GeometricBoundaryCondition::setComponentX(std::vector<double> componentX)
+void GeometricBoundaryCondition::setComponentX(double componentX)
 {
 	componentX_ = componentX;
 }
 
-void GeometricBoundaryCondition::setComponentY(std::vector<double> componentY)
+void GeometricBoundaryCondition::setComponentY(double componentY)
 {
 	componentY_ = componentY;
 }

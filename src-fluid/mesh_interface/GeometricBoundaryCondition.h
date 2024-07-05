@@ -6,7 +6,7 @@
 class GeometricBoundaryCondition
 {
 public:
-	GeometricBoundaryCondition(const int& index, const std::string& object,const bool& restrictedX,const bool& restrictedY, const std::vector<double>& componentX = std::vector<double>(), const std::vector<double>& componentY = std::vector<double>(), const std::string& referenceSystem = "GLOBAL", const std::string& method = "STRONG", const double& penaltyParameter = 1.0e6);
+	GeometricBoundaryCondition(const int& index, const std::string& object,const bool& restrictedX,const bool& restrictedY, const double& componentX, const double& componentY, const std::string& referenceSystem = "GLOBAL", const std::string& method = "STRONG", const double& penaltyParameter = 1.0e6);
 
 	~GeometricBoundaryCondition();
 
@@ -22,9 +22,9 @@ public:
 
 	bool getRestrictedY();
 
-	std::vector<double> getComponentX();
+	double getComponentX();
 
-	std::vector<double> getComponentY();
+	double getComponentY();
 
 	std::string getMethod();
 
@@ -38,9 +38,9 @@ public:
 
 	void setReferenceSystem(const std::string& referenceSystem);
 
-	void setComponentX(std::vector<double> componentX);
+	void setComponentX(double componentX);
 
-	void setComponentY(std::vector<double> componentY);
+	void setComponentY(double componentY);
 
 	void setRestrictedX(bool restrictedX);
 
@@ -55,8 +55,8 @@ private:
 	std::string point_;
 	std::string line_;
 	std::string referenceSystem_;
-	std::vector<double> componentX_;
-	std::vector<double> componentY_;
+	double componentX_;
+	double componentY_;
 	bool restrictedX_;
 	bool restrictedY_;
 	std::string method_;
