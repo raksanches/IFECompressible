@@ -23,6 +23,8 @@ Node::Node(const int& index, const bounded_vector<double, 2>& initialCoordinate)
     NeummanConstrained_=false;
     MeshConstrained_=false;
     mLump_=0.;
+    deltaMesh_(0)=0.;
+    deltaMesh_(1)=0.;
 }
 
 
@@ -134,6 +136,12 @@ void Node::setCurrentMomentum(const bounded_vector<double, 2>& currentMomentum)
     return currentMeshVelocity_;
  }
 
+ bounded_vector<double, 2> Node::getDeltaMesh()
+ {
+    return deltaMesh_;
+ }
+
+
  bounded_vector<double, 2> Node::getCurrentMomentum()
  {
     return currentMomentum_;
@@ -231,7 +239,9 @@ void Node::updateMesh()
 { 
     for (size_t i = 0; i < 2; i++)
     {
-        currentMeshVelocity_(i) += deltaMesh_(i); 
+        currentMeshVelocity_(i) += 0.;
+        // calcular em função de deltaMesh_(i); 
+        // atualizar as coordenadas da malha: x=x+deltamesh
     } 
 
 }

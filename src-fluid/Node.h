@@ -68,6 +68,7 @@ void setMeshConstrain(const bool& isConstrained);
  bounded_vector<double, 2> getCurrentMomentum();
 
  bounded_vector<double, 2> getCurrentMeshVelocity();
+ bounded_vector<double, 2> getDeltaMesh();
 
  double getCurrentInternalEnergy();
 

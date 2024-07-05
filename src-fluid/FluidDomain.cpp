@@ -1599,7 +1599,7 @@ void FluidDomain::solveCompressibleFlowMoving()
     std::cout<<"Starting time loop"<<std::endl; 
 	
 	Mat               A;  
-    Vec               b, x, All, lumpedMass, xlump, AllLump, rhsSG, AllrhsSG; //dispMeshValues
+    Vec               b, x, All, lumpedMass, xlump, AllLump, rhsSG, AllrhsSG, dispMeshValues;
     PetscErrorCode    ierr;
     PetscInt          Istart, Iend, Idof, Ione, iterations, *dof, *dofMesh;
     KSP               ksp;
@@ -1780,8 +1780,14 @@ void FluidDomain::solveCompressibleFlowMoving()
 	std::vector<int> tempMesh = getMeshConstrains(); 
 	PetscMalloc1(tempMesh.size(),&dofMesh);
 
-	/*std::vector<double> tempMeshValues = getMeshDisplacementValues(); 
-	PetscMalloc1(tempMeshValues.size(),&dispMeshValues);*/
+	std::vector<double> tempMeshValues = getMeshDisplacementValues(); 
+
+	//for (int i =0; i< tempMeshValues.size(); i++)
+	//{
+	//	std::cout<<i<<" "<<tempMesh[i]<<" consvalue "<<tempMeshValues[i]<<std::endl;		
+	//}
+	
+	//PetscMalloc1(tempMeshValues.size(),&dispMeshValues);*/
 
 	//std::cout<<" restriced dofs "<<" "<<temp.size()<<std::endl;
 
@@ -1791,11 +1797,6 @@ void FluidDomain::solveCompressibleFlowMoving()
 
 	}
 
-	/*for (size_t i = 0; i < tempMeshValues.size(); i++)
-	{
-		dispMeshValues[i] = tempMeshValues[i];
-
-	}*/
 
 	for (int itimeStep = 0; itimeStep < numberOfTimeSteps_; itimeStep++)
 	{
@@ -2573,8 +2574,7 @@ void FluidDomain::solveCompressibleFlowMoving()
 			ierr = VecDestroy(&lumpedMass); //CHKERRQ(ierr);
 			ierr = VecDestroy(&xlump); //CHKERRQ(ierr);
 			ierr = VecDestroy(&AllLump); //CHKERRQ(ierr);
-			exportToParaview(itimeStep+1);
-	
+			
 
 		 //std::cout<<"TO enter mesh"<<std::endl; 
 		//	************************************
@@ -2595,6 +2595,13 @@ void FluidDomain::solveCompressibleFlowMoving()
             ierr = VecSetFromOptions(b); //CHKERRQ(ierr);
             ierr = VecDuplicate(b,&x); //CHKERRQ(ierr);
             ierr = VecDuplicate(b,&All); //CHKERRQ(ierr);
+            ierr = VecDuplicate(b,&dispMeshValues); //CHKERRQ(ierr);
+
+		//for (size_t i = 0; i < tempMeshValues.size(); i++)
+		//{
+		//	dispMeshValues[i] = tempMeshValues[i];
+
+		//}
 
 //std::cout<<"TO enter Elements mesh"<<std::endl; 
 	
@@ -2625,15 +2632,13 @@ void FluidDomain::solveCompressibleFlowMoving()
 		
 		} // loop over elements
 	
+		
 	 	//Assemble matrices and vectors
     	ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY); //CHKERRQ(ierr);
     	ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY); //CHKERRQ(ierr);
 
-/*
 
-//    	ierr = VecAssemblyBegin(b); //CHKERRQ(ierr);
-//    	ierr = VecAssemblyEnd(b); //CHKERRQ(ierr);
-	 	
+		
 			
 		//MatView(A,PETSC_VIEWER_STDOUT_WORLD);//CHKERRQ(ierr);
 		//VecView(b,PETSC_VIEWER_STDOUT_WORLD);//CHKERRQ(ierr);
@@ -2641,9 +2646,20 @@ void FluidDomain::solveCompressibleFlowMoving()
 		//-------------------------------------------				
 		//Applying boundary conditions on Mesh
 
-		MatZeroRows(A, tempMesh.size(), dof, 1.0, x, b);
+		ierr = MatZeroRows(A, tempMesh.size(), dofMesh, 1.0,NULL,NULL);
 
-		//insert value in b
+		if(rank == 0 ){
+		for (size_t i = 0; i < tempMeshValues.size(); i++)
+		{
+		int index = tempMesh[i];
+								//std::cout<<"mlump "<<mlump<<std::endl;
+					ierr = VecSetValues(b, 1, &index, &tempMeshValues[i], INSERT_VALUES);
+		}
+		}
+    	ierr = VecAssemblyBegin(b); //CHKERRQ(ierr);
+    	ierr = VecAssemblyEnd(b); //CHKERRQ(ierr);
+	 	
+
 		//End Applying boundary conditions on Momentum
 		//-------------------------------------------
 		
@@ -2697,33 +2713,36 @@ void FluidDomain::solveCompressibleFlowMoving()
 		 	ierr = VecGetValues(All, Ione, &Idof, &val);
 		 	//CHKERRQ(ierr);
 		 	deltaMesh(0) = val;
-
+			//std::cout<<i<<" dxmesh "<<val<<std::endl;
 		 	Idof = 2 * i + 1;
 		 	ierr = VecGetValues(All, Ione, &Idof, &val);
 		 	//CHKERRQ(ierr);
 		 	deltaMesh(1) = val;	
-		
+			//std::cout<<i<<" dymesh "<<val<<std::endl;
+
 			nodes_[i]->setDeltaMesh(deltaMesh);			
 			
 		}
-		
-		for (Node* n : nodes_)
+
+		/*for (Node* n : nodes_)
 		{
 			n->updateMesh();
 			
  
 		}
+		*/
 		// //End updating momentum
 		// //---------------------------------------------------------------
 		// ierr = KSPDestroy(&ksp); //CHKERRQ(ierr);
-		*/
-		//ierr = VecDestroy(&b); //CHKERRQ(ierr);
-		//ierr = VecDestroy(&x); //CHKERRQ(ierr);
-		//ierr = VecDestroy(&All); //CHKERRQ(ierr);
+		
+		ierr = VecDestroy(&b); //CHKERRQ(ierr);
+		ierr = VecDestroy(&x); //CHKERRQ(ierr);
+		ierr = VecDestroy(&All); //CHKERRQ(ierr);
 		ierr = MatDestroy(&A); //CHKERRQ(ierr);
 
 		MPI_Barrier(PETSC_COMM_WORLD);
-
+	exportToParaview(itimeStep+1);
+	
 
 }
 
@@ -2803,6 +2822,19 @@ void FluidDomain::exportToParaview(const int& timestep)
 			 << u_(1)  << " " << 0.0 << "\n";
 	}
 	file << "      </DataArray> " << "\n";
+	file << "      <DataArray type=\"Float64\" NumberOfComponents=\"3\" "
+		<< "Name=\"MeshDisp\" format=\"ascii\">" << "\n";
+
+	for (Node* n: nodes_)
+	{
+	 bounded_vector<double, 2> u_ = n->getDeltaMesh();
+		// std::cout << dx << " "
+		// 	 << dy  << std::endl;
+		file << u_(0) << " "
+			 << u_(1)  << " " << 0.0 << "\n";
+	}
+	file << "      </DataArray> " << "\n";
+
 	file << "      <DataArray type=\"Float64\" NumberOfComponents=\"3\" "
 		<< "Name=\"Momentum\" format=\"ascii\">" << "\n";
 
