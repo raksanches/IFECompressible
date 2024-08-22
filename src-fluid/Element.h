@@ -52,6 +52,8 @@ public:
 
 	double getH();
 
+	double getDeltaT();
+
 	bounded_matrix<double, 3, 3> elementContributionsMesh(); 
 
 	std::pair<bounded_vector<double, 6>, bounded_matrix<double, 6, 6> > elementContributionsS1(const double& alphaM, const double& alphaF, const bool& sutherland);

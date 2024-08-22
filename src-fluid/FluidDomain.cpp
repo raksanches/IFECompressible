@@ -87,7 +87,9 @@ void FluidDomain::useSutherland(const bool& sutherland)
 void FluidDomain::addNode(const int& index, const bounded_vector<double,2>& initialCoordinate)
 {
 	Node* n = new Node(index, initialCoordinate);
+	n->setDeltat(deltat_);
 	nodes_.push_back(n);
+	
 }
 
 void FluidDomain::addElement(const int& index, const std::vector<int>& nodesIndex, const int& materialIndex, const double& thickness, const std::string& elementType)
@@ -2724,14 +2726,14 @@ void FluidDomain::solveCompressibleFlowMoving()
 			
 		}
 
-		/*for (Node* n : nodes_)
+		for (Node* n : nodes_)
 		{
 			n->updateMesh();
 			
  
 		}
-		*/
-		// //End updating momentum
+		
+		// //End updating mesh
 		// //---------------------------------------------------------------
 		// ierr = KSPDestroy(&ksp); //CHKERRQ(ierr);
 		

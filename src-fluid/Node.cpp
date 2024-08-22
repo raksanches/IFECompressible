@@ -225,6 +225,12 @@ bool Node::getMeshConstrain()
     return MeshConstrained_;
 }
 
+void Node::setDeltat(const double& deltat)
+{ 
+   deltat_ = deltat;
+
+}
+
 void Node::updateVariables()
 { 
     currentDensity_ += deltarho_;
@@ -239,8 +245,9 @@ void Node::updateMesh()
 { 
     for (size_t i = 0; i < 2; i++)
     {
-        currentMeshVelocity_(i) += 0.;
-        // calcular em função de deltaMesh_(i); 
+        
+        currentMeshVelocity_(i) = deltaMesh_(i)/deltat_;
+        currentCoordinate_(i) = currentCoordinate_(i)+deltaMesh_(i);  
         // atualizar as coordenadas da malha: x=x+deltamesh
     } 
 

@@ -90,6 +90,8 @@ bool getNeummanConstrain();
 
 bool getMeshConstrain();
 
+void setDeltat(const double& deltat);
+
  void updateVariables();
 
  void updateMesh();
@@ -114,7 +116,7 @@ private:
  bounded_vector<double, 2> deltaMesh_;
 
 
- double currentPressure_, currentDensity_, deltarho_, currentInternalEnergy_, currentTemperature_, deltarhoe_, mLump_;
+ double currentPressure_, currentDensity_, deltarho_, currentInternalEnergy_, currentTemperature_, deltarhoe_, mLump_, deltat_;
 
  bool constrained_, NeummanConstrained_, MeshConstrained_; 
 

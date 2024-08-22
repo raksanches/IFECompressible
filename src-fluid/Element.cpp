@@ -126,6 +126,11 @@ double Element::getTimeStep()
 	return timeStep_;
 }
 
+double Element::getDeltaT()
+{
+	return deltat_;
+}
+
 std::pair<vector<double>, vector<double> > Element::gaussLegendre(const int& nga)
 {
 	vector<double> qsi(nga, 0.0);
